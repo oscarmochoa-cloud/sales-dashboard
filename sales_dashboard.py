@@ -435,10 +435,12 @@ def clean_data(df):
                     'PUBLICIDAD', 'ENVIO', 'NET_PROFIT', 'NET_MARGIN']
     for col in numeric_cols:
         if col in df.columns:
-            df[col] = pd.to_numeric(
-                df[col].astype(str).str.replace('[$,% ]', '', regex=True).str.replace(',', '.'),
-                errors='coerce'
-            ).fillna(0)
+            cleaned = df[col].astype(str)
+            cleaned = cleaned.str.replace('$', '', regex=False)
+            cleaned = cleaned.str.replace(',', '', regex=False)
+            cleaned = cleaned.str.replace('%', '', regex=False)
+            cleaned = cleaned.str.replace(' ', '', regex=False)
+            df[col] = pd.to_numeric(cleaned, errors='coerce').fillna(0)
     
     # Calculate missing columns
     if 'NET_PROFIT' not in df.columns and 'VENTA_NETA' in df.columns and 'COSTO' in df.columns:
